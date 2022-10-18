@@ -1,47 +1,80 @@
 package ru.practicum.item;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.user.UserService;
 
 import java.util.*;
 
 @Component
 public class ItemRepositoryImpl implements ItemRepository {
-    private final Map<Long, List<Item>> items = new HashMap<>();
+    private final Map<Long, ItemDto> items = new HashMap<>();
+    private Long id = 1L;
 
-    @Override
-    public List<Item> findByUserId(long userId) {
-        return items.getOrDefault(userId, Collections.emptyList());
+    private final UserService userService;
+
+    public ItemRepositoryImpl(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
-    public Item save(Item item) {
-        item.setId(getId());
-        items.compute(item.getUserId(), (userId, userItems) -> {
-            if(userItems == null) {
-                userItems = new ArrayList<>();
-            }
-            userItems.add(item);
-            return userItems;
-        });
-
+    public ItemDto save(ItemDto item) {
+        item.setId(id);
+        items.put(item.getId(), item);
+        id++;
         return item;
     }
 
     @Override
-    public void deleteByUserIdAndItemId(long userId, long itemId) {
-        if(items.containsKey(userId)) {
-            List<Item> userItems = items.get(userId);
-            userItems.removeIf(item -> item.getId().equals(itemId));
-        }
+    public ItemDto findItemById(long itemId) {
+        return items.get(itemId);
     }
 
-    private long getId() {
-        long lastId = items.values()
-                .stream()
-                .flatMap(Collection::stream)
-                .mapToLong(Item::getId)
-                .max()
-                .orElse(0);
-        return lastId + 1;
+    @Override
+    public List<ItemDto> getAllItemsByUser(long userId) {
+        List<ItemDto> allUserItems = new ArrayList<>();
+        for (ItemDto item : items.values()) {
+            if (item.getUserId() == userId) {
+                allUserItems.add(item);
+            }
+        }
+        return allUserItems;
+    }
+
+    @Override
+    public List<ItemDto> searchItem(long userId, String text) {
+        List<ItemDto> targetItems = new ArrayList<>();
+        if (text.isEmpty()) {
+            return targetItems;
+        }
+        List<ItemDto> allItems = new ArrayList<>();
+        for (ItemDto item : items.values()) {
+            allItems.add(item);
+        }
+        for (ItemDto itemForSearch : allItems) {
+            if (itemForSearch.getAvailable() == true) {
+                String itemName = itemForSearch.getName().toLowerCase();
+                String itemDescription = itemForSearch.getDescription().toLowerCase();
+                if (itemName.contains(text.toLowerCase()) || itemDescription.contains(text.toLowerCase())) {
+                    targetItems.add(itemForSearch);
+                }
+            }
+        }
+        return targetItems;
+    }
+
+    @Override
+    public ItemDto updateItem(ItemDto item, long itemId) {
+        ItemDto updatedItem = items.get(itemId);
+        if (item.getAvailable() != null) {
+            updatedItem.setAvailable(item.getAvailable());
+        }
+        if (item.getName() != null) {
+            updatedItem.setName(item.getName());
+        }
+        if (item.getDescription() != null) {
+            updatedItem.setDescription(item.getDescription());
+        }
+        items.put(itemId, updatedItem);
+        return updatedItem;
     }
 }

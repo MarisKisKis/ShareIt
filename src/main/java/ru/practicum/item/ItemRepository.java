@@ -3,9 +3,13 @@ package ru.practicum.item;
 import java.util.List;
 
 public interface ItemRepository {
-    List<Item> findByUserId(long userId);
 
-    Item save(Item item);
+    ItemDto findItemById (long itemId);
 
-    void deleteByUserIdAndItemId(long userId, long itemId);
+    List <ItemDto> getAllItemsByUser(long userId);
+    ItemDto save(ItemDto item);
+
+    List<ItemDto> searchItem(long userId, String text);
+
+    ItemDto updateItem (ItemDto item, long itemId);
 }

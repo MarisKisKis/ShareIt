@@ -4,11 +4,18 @@ import org.apache.catalina.Context;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Wrapper;
 import org.apache.catalina.startup.Tomcat;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.servlet.DispatcherServlet;
 
-public class LaterApplication {
+@SpringBootApplication
+public class ShareItApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(ShareItApplication.class, args);
+    }
 
+    /*
     public static void main(String[] args) throws LifecycleException {
         Tomcat tomcat = new Tomcat();
         tomcat.getConnector().setPort(8080);
@@ -30,4 +37,6 @@ public class LaterApplication {
 
         tomcat.start();
     }
+
+     */
 }
