@@ -14,8 +14,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
-    @Autowired
+
     private final UserService userService;
+
+    @Autowired
+    public UserController (UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     public List <UserDto> getAllUsers() {

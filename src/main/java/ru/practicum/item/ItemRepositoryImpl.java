@@ -7,7 +7,7 @@ import java.util.*;
 
 @Component
 public class ItemRepositoryImpl implements ItemRepository {
-    private final Map<Long, ItemDto> items = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>();
     private Long id = 1L;
 
     private final UserService userService;
@@ -17,7 +17,7 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public ItemDto save(ItemDto item) {
+    public Item save(Item item) {
         item.setId(id);
         items.put(item.getId(), item);
         id++;
@@ -25,14 +25,14 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public ItemDto findItemById(long itemId) {
+    public Item findItemById(long itemId) {
         return items.get(itemId);
     }
 
     @Override
-    public List<ItemDto> getAllItemsByUser(long userId) {
-        List<ItemDto> allUserItems = new ArrayList<>();
-        for (ItemDto item : items.values()) {
+    public List<Item> getAllItemsByUser(long userId) {
+        List<Item> allUserItems = new ArrayList<>();
+        for (Item item : items.values()) {
             if (item.getUserId() == userId) {
                 allUserItems.add(item);
             }
@@ -41,17 +41,17 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public List<ItemDto> searchItem(long userId, String text) {
-        List<ItemDto> targetItems = new ArrayList<>();
+    public List<Item> searchItem(long userId, String text) {
+        List<Item> targetItems = new ArrayList<>();
         if (text.isEmpty()) {
             return targetItems;
         }
-        List<ItemDto> allItems = new ArrayList<>();
-        for (ItemDto item : items.values()) {
+        List<Item> allItems = new ArrayList<>();
+        for (Item item : items.values()) {
             allItems.add(item);
         }
-        for (ItemDto itemForSearch : allItems) {
-            if (itemForSearch.getAvailable() == true) {
+        for (Item itemForSearch : allItems) {
+            if (itemForSearch.isAvailable() == true) {
                 String itemName = itemForSearch.getName().toLowerCase();
                 String itemDescription = itemForSearch.getDescription().toLowerCase();
                 if (itemName.contains(text.toLowerCase()) || itemDescription.contains(text.toLowerCase())) {
@@ -63,18 +63,8 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public ItemDto updateItem(ItemDto item, long itemId) {
-        ItemDto updatedItem = items.get(itemId);
-        if (item.getAvailable() != null) {
-            updatedItem.setAvailable(item.getAvailable());
-        }
-        if (item.getName() != null) {
-            updatedItem.setName(item.getName());
-        }
-        if (item.getDescription() != null) {
-            updatedItem.setDescription(item.getDescription());
-        }
-        items.put(itemId, updatedItem);
-        return updatedItem;
+    public Item updateItem(Item item, long itemId) {
+        items.put(item.getId(), item);
+        return item;
     }
 }

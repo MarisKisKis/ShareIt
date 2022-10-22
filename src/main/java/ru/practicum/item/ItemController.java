@@ -13,13 +13,15 @@ import java.util.Set;
 
 @RestController
 @RequestMapping("/items")
-@RequiredArgsConstructor
 @Slf4j
 public class ItemController {
 
-    @Autowired
     private final ItemService itemService;
 
+    @Autowired
+    public ItemController (ItemService itemService) {
+        this.itemService = itemService;
+    }
 
     @GetMapping
     public List<ItemDto> getAllItemsByUser(@RequestHeader("X-Sharer-User-Id") long userId) {

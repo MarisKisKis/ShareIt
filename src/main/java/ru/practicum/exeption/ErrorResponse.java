@@ -1,14 +1,17 @@
 package ru.practicum.exeption;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
-@AllArgsConstructor
-public class ErrorResponse extends Throwable {
+@NoArgsConstructor
+public class ErrorResponse {
+
+    String message;
     public ErrorResponse(String message) {
-        super(message);
+
+        this.message = message;
     }
 }
