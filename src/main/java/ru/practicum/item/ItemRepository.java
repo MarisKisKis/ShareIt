@@ -1,16 +1,16 @@
 package ru.practicum.item;
 
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+
 import java.util.List;
 
-public interface ItemRepository {
+public interface ItemRepository extends JpaRepository<Item, Long> {
 
-    Item findItemById (long itemId);
+    List<Item> findAllByOwnerIdOrderById(Long userId);
 
-    List <Item> getAllItemsByUser(long userId);
-
-    Item save(Item item);
-
-    List<Item> searchItem(long userId, String text);
-
-    Item updateItem (Item item, long itemId);
+    @Query(" select i from Item i " +
+            "where upper(i.name) like upper(concat('%', ?1, '%')) " +
+            " or upper(i.description) like upper(concat('%', ?1, '%'))")
+    List<Item> search(String text);
 }

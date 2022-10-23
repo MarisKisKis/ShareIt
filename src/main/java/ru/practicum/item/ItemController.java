@@ -9,7 +9,6 @@ import ru.practicum.Create;
 import ru.practicum.Update;
 
 import java.util.List;
-import java.util.Set;
 
 @RestController
 @RequestMapping("/items")
@@ -46,6 +45,14 @@ public class ItemController {
                      @RequestBody ItemDto itemDto) {
         log.info("Добавляем новую вещь пользователю с id {}", userId);
         return itemService.addNewItem(userId, itemDto);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto createComment(@RequestHeader("X-Sharer-User-Id") long userId,
+                                    @RequestBody CommentDto commentDto,
+                                    @PathVariable long itemId) {
+        log.info("Добавляем комментарий к вещи с id {}", itemId);
+        return itemService.addComment(userId, commentDto, itemId);
     }
 
 
