@@ -1,47 +1,70 @@
 package ru.practicum.item;
 
 import org.springframework.stereotype.Component;
+import ru.practicum.user.UserService;
 
 import java.util.*;
 
 @Component
 public class ItemRepositoryImpl implements ItemRepository {
-    private final Map<Long, List<Item>> items = new HashMap<>();
+    private final Map<Long, Item> items = new HashMap<>();
+    private Long id = 1L;
 
-    @Override
-    public List<Item> findByUserId(long userId) {
-        return items.getOrDefault(userId, Collections.emptyList());
+    private final UserService userService;
+
+    public ItemRepositoryImpl(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public Item save(Item item) {
-        item.setId(getId());
-        items.compute(item.getUserId(), (userId, userItems) -> {
-            if(userItems == null) {
-                userItems = new ArrayList<>();
-            }
-            userItems.add(item);
-            return userItems;
-        });
-
+        item.setId(id);
+        items.put(item.getId(), item);
+        id++;
         return item;
     }
 
     @Override
-    public void deleteByUserIdAndItemId(long userId, long itemId) {
-        if(items.containsKey(userId)) {
-            List<Item> userItems = items.get(userId);
-            userItems.removeIf(item -> item.getId().equals(itemId));
-        }
+    public Item findItemById(long itemId) {
+        return items.get(itemId);
     }
 
-    private long getId() {
-        long lastId = items.values()
-                .stream()
-                .flatMap(Collection::stream)
-                .mapToLong(Item::getId)
-                .max()
-                .orElse(0);
-        return lastId + 1;
+    @Override
+    public List<Item> getAllItemsByUser(long userId) {
+        List<Item> allUserItems = new ArrayList<>();
+        for (Item item : items.values()) {
+            if (item.getUserId() == userId) {
+                allUserItems.add(item);
+            }
+        }
+        return allUserItems;
+    }
+
+    @Override
+    public List<Item> searchItem(long userId, String text) {
+        List<Item> targetItems = new ArrayList<>();
+        if (text.isEmpty()) {
+            return targetItems;
+        }
+        List<Item> allItems = new ArrayList<>();
+        for (Item item : items.values()) {
+            allItems.add(item);
+        }
+        for (Item itemForSearch : allItems) {
+            if (itemForSearch.isAvailable() == true) {
+                String itemName = itemForSearch.getName().toLowerCase();
+                String itemDescription = itemForSearch.getDescription().toLowerCase();
+                if (itemName.contains(text.toLowerCase()) || itemDescription.contains(text.toLowerCase())) {
+                    targetItems.add(itemForSearch);
+                }
+            }
+        }
+        return targetItems;
+    }
+
+    @Override
+    public Item updateItem(Item item, long itemId) {
+        items.put(item.getId(), item);
+        return item;
     }
 }
