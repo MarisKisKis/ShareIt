@@ -3,6 +3,7 @@ package ru.practicum.item;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
@@ -16,11 +17,11 @@ import javax.validation.constraints.NotNull;
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "item_id")
+    @Column(name = "id")
     private Long id;
     @NotNull
     @NotBlank
-    @Column(name = "item_name", nullable = false)
+    @Column(name = "name", nullable = false)
     private String name;
     @NotNull
     @NotBlank
@@ -29,9 +30,13 @@ public class Item {
     @NotNull
     @Column(name = "available", nullable = false)
     private boolean available;
-    @NotNull
-    @Column(name = "user_Id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    /*
     @Column(name = "request_Id")
     private String requestId;
+
+     */
 }

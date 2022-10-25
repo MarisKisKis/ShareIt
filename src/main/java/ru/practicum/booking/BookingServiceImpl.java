@@ -1,5 +1,6 @@
 package ru.practicum.booking;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -21,11 +22,14 @@ import static java.util.stream.Collectors.toList;
 @Transactional(readOnly = true)
 public class BookingServiceImpl implements BookingService {
 
-    private ItemRepository itemRepository;
 
-    private UserRepository userRepository;
+    private final ItemRepository itemRepository;
 
-    private BookingRepository bookingRepository;
+
+    private final UserRepository userRepository;
+
+
+    private final BookingRepository bookingRepository;
 
     @Autowired
     public BookingServiceImpl(ItemRepository itemRepository, UserRepository userRepository, BookingRepository bookingRepository) {
@@ -34,9 +38,11 @@ public class BookingServiceImpl implements BookingService {
         this.bookingRepository = bookingRepository;
     }
 
+
+    @Transactional
     @Override
     public BookingDto addNewBooking(long userId, BookingDto bookingDto) {
-        Optional <Item> itemCheck = itemRepository.findById(bookingDto.getItemId());
+        Optional <Item> itemCheck = itemRepository.findById(bookingDto.getItem().getId());
         /*
         if (itemOpt.isEmpty()) {
             throw new ObjectNotFoundException("Item c id = {} не существует", bookingDtoInput.getItemId());
@@ -75,7 +81,7 @@ public class BookingServiceImpl implements BookingService {
                 throw new ValidationException("Вещь не доступна к бронированию в это время");
             }
         }
-        Booking booking = BookingMapper.toBooking(bookingDto);
+        Booking booking = BookingMapper.toBooking(bookingDto, user, item, BookingStatus.WAITING);
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
@@ -98,11 +104,13 @@ public class BookingServiceImpl implements BookingService {
         return BookingMapper.toBookingDto(bookingRepository.save(booking));
     }
 
+    @Transactional
     @Override
     public BookingDto findBookingById(long userId, Long bookingId) {
         return BookingMapper.toBookingDto(bookingRepository.getById(bookingId));
     }
 
+    @Transactional
     @Override
     public List<BookingDto> getUserBookings(Long userId, BookingState state) {
         Sort startSortDesc = Sort.by(Sort.Direction.DESC, "start");
@@ -145,38 +153,39 @@ public class BookingServiceImpl implements BookingService {
         }
     }
 
+    @Transactional
     @Override
     public List<BookingDto> getAllItemsBookings(long ownerId, BookingState state) {
         Sort startSortDesc = Sort.by(Sort.Direction.DESC, "start");
         switch (state) {
             case ALL:
-                return bookingRepository.findByItemOwnerId(ownerId, startSortDesc)
+                return bookingRepository.findByItemId_UserId(ownerId, startSortDesc)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(toList());
             case FUTURE:
-                return bookingRepository.findByItemOwnerIdAndStartIsAfter(ownerId, LocalDateTime.now(), startSortDesc)
+                return bookingRepository.findByItemId_UserIdAndStartIsAfter(ownerId, LocalDateTime.now(), startSortDesc)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(toList());
             case CURRENT:
-                return bookingRepository.findByItemOwnerIdAndEndIsAfterAndStartIsBefore(ownerId, LocalDateTime.now(),
+                return bookingRepository.findByItemId_UserIdAndEndIsAfterAndStartIsBefore(ownerId, LocalDateTime.now(),
                                 LocalDateTime.now(), startSortDesc)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(toList());
             case PAST:
-                return bookingRepository.findByItemOwnerIdAndEndIsBefore(ownerId, LocalDateTime.now(), startSortDesc)
+                return bookingRepository.findByItemId_UserIdAndEndIsBefore(ownerId, LocalDateTime.now(), startSortDesc)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(toList());
             case WAITING:
-                return bookingRepository.findByItem_Owner_IdAndStatus(ownerId, BookingStatus.WAITING, startSortDesc)
+                return bookingRepository.findByItemId_User_IdAndStatus(ownerId, BookingStatus.WAITING, startSortDesc)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(toList());
             case REJECTED:
-                return bookingRepository.findByItem_Owner_IdAndStatus(ownerId, BookingStatus.REJECTED, startSortDesc)
+                return bookingRepository.findByItemId_User_IdAndStatus(ownerId, BookingStatus.REJECTED, startSortDesc)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(toList());

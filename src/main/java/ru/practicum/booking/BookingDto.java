@@ -14,16 +14,31 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
-@JsonInclude(JsonInclude.Include.NON_NULL)
 public class BookingDto {
-    private long bookingId;
-    @NotBlank(groups = {Create.class})
+    private Long id;
     private LocalDateTime start;
     private LocalDateTime end;
-    @NotBlank(groups = {Create.class})
-    private long itemId;
-    @NotBlank(groups = {Create.class})
-    private long bookerId;
+    private ItemDto item;
+    private UserDto booker;
     private BookingStatus status;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class ItemDto {
+
+        private Long id;
+        private String name;
+        private String description;
+        private Boolean available;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class UserDto {
+        private Long id;
+        private String name;
+        private String email;
+    }
 }

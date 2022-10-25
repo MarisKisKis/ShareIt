@@ -11,16 +11,10 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class UserDto {
     private Long id;
-    @Email(groups = {Update.class, Create.class})
-    @NotNull(groups = {Create.class})
     private String email;
-    @NotBlank(groups = {Create.class})
     private String name;
-
 }
