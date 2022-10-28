@@ -11,13 +11,12 @@ import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 @Table(name = "bookings", schema = "public")
 public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "booking_id")
     private long bookingId;
     @Column(name = "start_date_time", nullable = false)
     private LocalDateTime start;
@@ -32,4 +31,13 @@ public class Booking {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private BookingStatus status;
+
+    public Booking(long id, LocalDateTime start, LocalDateTime end, Item item, User user, BookingStatus status) {
+    this.bookingId = id;
+    this.start = start;
+    this.end = end;
+    this.item = item;
+    this.booker = user;
+    this.status = status;
+    }
 }

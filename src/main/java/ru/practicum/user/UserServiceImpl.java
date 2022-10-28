@@ -3,6 +3,7 @@ package ru.practicum.user;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.exeption.EmptyException;
 import ru.practicum.exeption.ObjectNotFoundException;
 import ru.practicum.exeption.ValidationException;
 
@@ -43,10 +44,12 @@ public class UserServiceImpl implements UserService{
     @Override
     public UserDto saveUser(UserDto userDto) {
         User user = UserMapper.toUser(userDto);
-        if (!user.getEmail().contains("@")) {
+        if (!userDto.getEmail().contains("@")) {
             throw new ValidationException("Некорректный Email");
         }
-        return UserMapper.toUserDto(repository.save(user));
+        repository.save(user);
+
+        return UserMapper.toUserDto(user);
     }
 
     @Transactional
@@ -66,5 +69,12 @@ public class UserServiceImpl implements UserService{
     @Override
     public void deleteUser(long userId) {
         repository.deleteById(userId);
+    }
+    private void validateDupEmail (User valUser) {
+        for (User user : repository.findAll()) {
+            if (user.getEmail().contains(valUser.getEmail())) {
+                throw new EmptyException("Пользователь с таким email уже существует!");
+            }
+        }
     }
 }

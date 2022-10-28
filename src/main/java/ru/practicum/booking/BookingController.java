@@ -23,7 +23,7 @@ public class BookingController {
 
     @GetMapping("/{bookingId}")
     public BookingDto findBookingById(@RequestHeader("X-Sharer-User-Id") long userId,
-                                      @PathVariable Long bookingId) {
+                                      @PathVariable long bookingId) {
         log.info("Получаем информацию о бронировании пользователя с id {}", userId);
         return bookingService.findBookingById(userId, bookingId);
     }
@@ -33,8 +33,12 @@ public class BookingController {
                                             @RequestParam(name = "state", required = false,
                                                     defaultValue = "ALL") String bookState) {
         log.info("Получаем список всех бронирований текущего пользователя с id {}", userId);
-        BookingState state = BookingState.valueOf(bookState);
-        return bookingService.getUserBookings(userId, state);
+        try {
+            BookingState state = BookingState.valueOf(bookState);
+            return bookingService.getUserBookings(userId, state);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
+        }
     }
 
     @GetMapping("/owner")
@@ -42,15 +46,19 @@ public class BookingController {
                                                 @RequestParam(name = "state", required = false,
                                                         defaultValue = "ALL") String bookState) {
         log.info("Получаем список бронирований для всех вещей текущего пользователя с id {}", ownerId);
-        BookingState state = BookingState.valueOf(bookState);
-        return bookingService.getAllItemsBookings(ownerId, state);
+        try {
+            BookingState state = BookingState.valueOf(bookState);
+            return bookingService.getAllItemsBookings(ownerId, state);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
+        }
     }
 
     @PostMapping
     public BookingDto addBooking(@RequestHeader("X-Sharer-User-Id") long userId,
-                                 @RequestBody BookingDto bookingDto) {
+                                 @RequestBody BookingDtoInput bookingDtoInput) {
         log.info("Добавляем новое бронирование пользователю с id {}", userId);
-        return bookingService.addNewBooking(userId, bookingDto);
+        return bookingService.addNewBooking(userId, bookingDtoInput);
     }
 
     @PatchMapping("/{bookingId}")

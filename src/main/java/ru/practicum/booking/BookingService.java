@@ -3,13 +3,13 @@ package ru.practicum.booking;
 import java.util.List;
 
 public interface BookingService {
-    BookingDto addNewBooking(long userId, BookingDto bookingDto);
+    BookingDto addNewBooking(long userId, BookingDtoInput bookingDtoInput);
 
-    BookingDto approveBooking(Long userId, Long bookingId, String approved);
+    BookingDto approveBooking(long userId, long bookingId, String approved);
 
-    BookingDto findBookingById(long userId, Long bookingId);
+    BookingDto findBookingById(long userId, long bookingId);
 
-    List<BookingDto> getUserBookings(Long userId, BookingState state);
+    List<BookingDto> getUserBookings(long userId, BookingState state);
 
     List<BookingDto> getAllItemsBookings(long ownerId, BookingState state);
 }

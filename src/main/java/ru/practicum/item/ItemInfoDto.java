@@ -20,6 +20,13 @@ public class ItemInfoDto {
     private BookingDto nextBooking;
     private List<CommentDto> commentsDto;
 
+    public ItemInfoDto(Long id, String name, String description, boolean available) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.available = available;
+    }
+
 
     @Data
     @NoArgsConstructor
@@ -29,5 +36,6 @@ public class ItemInfoDto {
         LocalDateTime start;
 		LocalDateTime end;
         Long bookerId;
+
     }
 }

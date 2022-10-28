@@ -8,6 +8,7 @@ import ru.practicum.user.User;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,7 +18,7 @@ import javax.validation.constraints.NotNull;
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "item_id")
     private Long id;
     @NotNull
     @NotBlank
@@ -33,6 +34,14 @@ public class Item {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    public Item (String name, String description, Boolean available, User user) {
+        this.name = name;
+        this.description = description;
+        this.available = available;
+        this.user = user;
+
+    }
 
     /*
     @Column(name = "request_Id")

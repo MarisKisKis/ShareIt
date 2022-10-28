@@ -8,6 +8,8 @@ import javax.validation.constraints.Email;
 
 @Getter
 @Setter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -15,11 +17,17 @@ import javax.validation.constraints.Email;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
+    @Column(name = "user_id")
     private long id;
-    @Column(name = "name", nullable = false)
-    private String name;
     @Email
     @Column(name = "email", nullable = false, unique = true, length = 512)
     private String email;
+    @Column(name = "name", nullable = false)
+    private String name;
+
+    public User(String email, String name) {
+        this.email = email;
+        this.name = name;
+
+    }
 }

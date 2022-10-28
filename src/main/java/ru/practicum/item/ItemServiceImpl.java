@@ -14,6 +14,7 @@ import ru.practicum.user.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
 
@@ -44,7 +45,8 @@ public class ItemServiceImpl implements ItemService {
         if (itemId == 0) {
             throw new ObjectNotFoundException("Нет такой вещи");
         }
-        Item item = repository.findById(itemId).orElseThrow(ObjectNotFoundException::new);
+        Optional<Item> itemOpt = repository.findById(itemId);
+        Item item = itemOpt.get();
         List<Booking> bookings = bookingRepository.findByItemIdOrderByStartDesc(itemId);
         List<Comment> comments = commentRepository.findAllByItemId(itemId);
         List<CommentDto> commentsDto = new ArrayList<>();
@@ -96,17 +98,24 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> searchItem (long userId, String text) {
-        log.info("Передан запрос на поиск вещи");
-        return repository.search(text)
-                .stream()
-                .map(ItemMapper::toItemDto)
-                .collect(toList());
+        List<ItemDto> resultSearch = new ArrayList<>();
+        if (text.isEmpty()) {
+            return resultSearch;
+        }
+        List<Item> itemList = repository.search(text);
+        for (Item item : itemList) {
+            if (item.isAvailable() == true) {
+                resultSearch.add(ItemMapper.toItemDto(item));
+            }
+        }
+        return resultSearch;
     }
 
     @Transactional
     @Override
     public ItemDto updateItem(ItemDto item, long itemId, long userId) {
-        Item updatedItem = repository.getById(itemId);
+        Optional <Item> repItem = repository.findById(itemId);
+        Item updatedItem = repItem.get();
         if (item.getAvailable() != null) {
             updatedItem.setAvailable(item.getAvailable());
         }
@@ -119,7 +128,8 @@ public class ItemServiceImpl implements ItemService {
         if (userId == 0) {
             throw new ValidationException("Пользователь не найден");
         }
-        User user = userRepository.getById(userId);
+        Optional <User> repUser = userRepository.findById(userId);
+        User user = repUser.get();
         if (user.getId() != updatedItem.getUser().getId()) {
                 throw new ObjectNotFoundException("Вещь принадлежит другому пользователю!");
         }
