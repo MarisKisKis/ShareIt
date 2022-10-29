@@ -81,8 +81,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingDto approveBooking(long userId, long bookingId, String approved) {
-        Optional <Booking> optBooking = bookingRepository.findById(bookingId);
+    public BookingDto approveBooking(long userId, long id, String approved) {
+        Optional <Booking> optBooking = bookingRepository.findById(id);
         Booking booking = optBooking.get();
         if (optBooking.isEmpty()) {
             throw new ObjectNotFoundException("Бронирования нет в базе");
@@ -109,8 +109,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public BookingDto findBookingById(long userId, long bookingId) {
-        Optional <Booking> booking = bookingRepository.findById(bookingId);
+    public BookingDto findBookingById(long userId, long id) {
+        Optional <Booking> booking = bookingRepository.findById(id);
         if (booking.isEmpty()) {
             throw new ObjectNotFoundException("Нет бронирования с таким id");
         }

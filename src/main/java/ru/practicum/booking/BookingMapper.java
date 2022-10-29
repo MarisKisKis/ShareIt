@@ -7,7 +7,7 @@ import ru.practicum.user.User;
 public class BookingMapper {
     public static BookingDto toBookingDto(Booking booking) {
         return new BookingDto(
-                booking.getBookingId(),
+                booking.getId(),
                 booking.getStart(),
                 booking.getEnd(),
                 new BookingDto.ItemDto(booking.getItem().getId(),

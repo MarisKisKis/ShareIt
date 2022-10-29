@@ -20,15 +20,14 @@ public class ItemMapper {
     }
 
     public static ItemInfoDto toItemInfoDto(Item item, Booking lastBooking,
-                                            Booking nextBooking, List<CommentDto> commentsDto) {
-        ItemInfoDto itemInfo = new ItemInfoDto(item.getId(), item.getName(), item.getDescription(), item.isAvailable());
+                                            Booking nextBooking, List<CommentDto> comments) {
+        ItemInfoDto itemInfo = new ItemInfoDto(item.getId(), item.getName(), item.getDescription(), item.isAvailable(), comments);
         if (lastBooking != null) {
-            itemInfo.setLastBooking(new ItemInfoDto.BookingDto(lastBooking.getBookingId(), lastBooking.getStart(), lastBooking.getEnd(),
+            itemInfo.setLastBooking(new ItemInfoDto.BookingDto(lastBooking.getId(),
                     lastBooking.getBooker().getId()));
         }
         if (nextBooking != null) {
-            itemInfo.setNextBooking(new ItemInfoDto.BookingDto(nextBooking.getBookingId(), nextBooking.getStart(),
-                    nextBooking.getEnd(), nextBooking.getBooker().getId()));
+            itemInfo.setNextBooking(new ItemInfoDto.BookingDto(nextBooking.getId(), nextBooking.getBooker().getId()));
         }
         return itemInfo;
     }

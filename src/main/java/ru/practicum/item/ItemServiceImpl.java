@@ -14,6 +14,7 @@ import ru.practicum.user.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
@@ -56,7 +57,10 @@ public class ItemServiceImpl implements ItemService {
                 commentsDto.add(CommentMapper.toCommentDto(comment));
             }
         }
-        if (bookings.isEmpty() || (item.getUser().getId() != userId)) {
+        if (comments.isEmpty() && comments == null) {
+            commentsDto.clear();
+        }
+            if (bookings.isEmpty() || (item.getUser().getId() != userId)) {
             return ItemMapper.toItemInfoDto(item, null, null, commentsDto);
         }
         Booking lastBooking = findLastBooking(bookings);
@@ -141,8 +145,23 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     @Override
     public CommentDto addComment(long userId, CommentDto commentDto, long itemId) {
-        Comment comment = CommentMapper.toComment(commentDto);
-        return CommentMapper.toCommentDto(commentRepository.save(comment));
+        Optional <User> userOpt = userRepository.findById(userId);
+        User user = userOpt.get();
+        if (user == null) {
+            throw new ValidationException("no user");
+        }
+        Item item = repository.findById(itemId).orElseThrow(ObjectNotFoundException::new);
+        List<Booking> bookings = bookingRepository.findByBookerIdAndItemId(userId, itemId);
+        for (Booking booking : bookings) {
+            if (booking.getEnd().isBefore(LocalDateTime.now())) {
+                Comment comment = CommentMapper.toComment(commentDto, item, user, LocalDateTime.now());
+                if (comment.getText().isEmpty()) {
+                    throw new ValidationException("no comment text");
+                }
+                    return CommentMapper.toCommentDto(commentRepository.save(comment));
+            }
+        }
+        throw new ValidationException("no comment");
     }
 
     private Booking findLastBooking(List<Booking> bookings) {

@@ -1,6 +1,5 @@
 package ru.practicum.booking;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.item.Item;
@@ -17,7 +16,7 @@ public class Booking {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "booking_id")
-    private long bookingId;
+    private long id;
     @Column(name = "start_date_time", nullable = false)
     private LocalDateTime start;
     @Column(name = "end_date_time")
@@ -33,7 +32,7 @@ public class Booking {
     private BookingStatus status;
 
     public Booking(long id, LocalDateTime start, LocalDateTime end, Item item, User user, BookingStatus status) {
-    this.bookingId = id;
+    this.id = id;
     this.start = start;
     this.end = end;
     this.item = item;
