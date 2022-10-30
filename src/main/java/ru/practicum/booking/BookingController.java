@@ -30,11 +30,13 @@ public class BookingController {
     @GetMapping
     public List<BookingDto> getUserBookings(@RequestHeader("X-Sharer-User-Id") long userId,
                                             @RequestParam(name = "state", required = false,
-                                                    defaultValue = "ALL") String bookState) {
+                                                    defaultValue = "ALL") String bookState,
+                                            @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                            @RequestParam(name = "size", defaultValue = "20") Integer size) {
         log.info("Получаем список всех бронирований текущего пользователя с id {}", userId);
         try {
             BookingState state = BookingState.valueOf(bookState);
-            return bookingService.getUserBookings(userId, state);
+            return bookingService.getUserBookings(userId, state, from, size);
         } catch (IllegalArgumentException e) {
             throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
@@ -43,11 +45,13 @@ public class BookingController {
     @GetMapping("/owner")
     public List<BookingDto> getAllItemsBookings(@RequestHeader("X-Sharer-User-Id") long ownerId,
                                                 @RequestParam(name = "state", required = false,
-                                                        defaultValue = "ALL") String bookState) {
+                                                        defaultValue = "ALL") String bookState,
+                                                @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                                @RequestParam(name = "size", defaultValue = "20") Integer size) {
         log.info("Получаем список бронирований для всех вещей текущего пользователя с id {}", ownerId);
         try {
             BookingState state = BookingState.valueOf(bookState);
-            return bookingService.getAllItemsBookings(ownerId, state);
+            return bookingService.getAllItemsBookings(ownerId, state, from, size);
         } catch (IllegalArgumentException e) {
             throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }

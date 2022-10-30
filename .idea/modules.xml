@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/module4_spring_without_boot-spring_mvc_dispatcher_servlet.iml" filepath="$PROJECT_DIR$/.idea/module4_spring_without_boot-spring_mvc_dispatcher_servlet.iml" />
       <module fileurl="file://$PROJECT_DIR$/shareit.iml" filepath="$PROJECT_DIR$/shareit.iml" />
     </modules>
   </component>

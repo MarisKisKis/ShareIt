@@ -23,6 +23,7 @@ public class UserServiceImpl implements UserService{
         this.repository = repository;
     }
 
+
     @Override
     public List<UserDto> getAllUsers() {
         return repository.findAll()

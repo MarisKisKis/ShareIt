@@ -1,22 +1,36 @@
 package ru.practicum.item;
 
 import ru.practicum.booking.Booking;
+import ru.practicum.request.ItemRequest;
 import ru.practicum.user.User;
 
 import java.util.List;
 
 public class ItemMapper {
-    public static Item toItem(ItemDto dto, User user) {
-        return new Item(dto.getName(), dto.getDescription(), dto.getAvailable(), user);
+    public static Item toItem(ItemDto dto, User user, ItemRequest request) {
+        Item item = Item.builder()
+                .name(dto.getName())
+                .description(dto.getDescription())
+                .available(dto.getAvailable())
+                .user(user)
+                .build();
+        if (request != null) {
+            item.setRequest(request);
+        }
+        return item;
     }
 
     public static ItemDto toItemDto(Item item) {
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.isAvailable()
-        );
+        ItemDto itemDto = ItemDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.isAvailable())
+                .build();
+        if (item.getRequest() != null) {
+            itemDto.setRequestId(item.getRequest().getRequestId());
+        }
+        return itemDto;
     }
 
     public static ItemInfoDto toItemInfoDto(Item item, Booking lastBooking,

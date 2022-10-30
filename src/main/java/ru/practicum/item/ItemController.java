@@ -1,12 +1,9 @@
 package ru.practicum.item;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.Create;
-import ru.practicum.Update;
+
 
 import java.util.List;
 
@@ -23,9 +20,11 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemInfoDto> getAllItemsByUser(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemInfoDto> getAllItemsByUser(@RequestHeader("X-Sharer-User-Id") long userId,
+                                               @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                               @RequestParam(name = "size", defaultValue = "20") Integer size) {
         log.info("Получаем все вещи пользователя с id {}", userId);
-        return itemService.getAllItemsByUser(userId);
+        return itemService.getAllItemsByUser(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
@@ -35,9 +34,11 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(@RequestHeader ("X-Sharer-User-Id") long userId, @RequestParam String text) {
+    public List<ItemDto> searchItem(@RequestHeader ("X-Sharer-User-Id") long userId, @RequestParam String text,
+                                    @RequestParam(name = "from", defaultValue = "0") Integer from,
+                                    @RequestParam(name = "size", defaultValue = "20") Integer size) {
         log.info("Ищем вещь по описанию", text);
-        return itemService.searchItem(userId, text);
+        return itemService.searchItem(userId, text,  from, size);
     }
 
     @PostMapping

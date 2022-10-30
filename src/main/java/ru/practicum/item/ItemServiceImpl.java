@@ -2,12 +2,16 @@ package ru.practicum.item;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.booking.Booking;
 import ru.practicum.booking.BookingRepository;
 import ru.practicum.exeption.ObjectNotFoundException;
 import ru.practicum.exeption.ValidationException;
+import ru.practicum.request.ItemRequest;
+import ru.practicum.request.ItemRequestRepository;
 import ru.practicum.user.User;
 import ru.practicum.user.UserRepository;
 
@@ -31,13 +35,16 @@ public class ItemServiceImpl implements ItemService {
 
     private final BookingRepository bookingRepository;
 
+    private final ItemRequestRepository itemRequestRepository;
+
     @Autowired
     public ItemServiceImpl (ItemRepository repository, UserRepository userRepository, CommentRepository commentRepository,
-                            BookingRepository bookingRepository) {
+                            BookingRepository bookingRepository, ItemRequestRepository itemRequestRepository) {
         this.repository = repository;
         this.userRepository = userRepository;
         this.commentRepository = commentRepository;
         this.bookingRepository = bookingRepository;
+        this.itemRequestRepository = itemRequestRepository;
     }
 
     @Override
@@ -68,12 +75,13 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemInfoDto> getAllItemsByUser(long userId) {
+    public List<ItemInfoDto> getAllItemsByUser(long userId, Integer from, Integer size) {
         if (userId == 0) {
             throw new ValidationException("Нет такого пользователя");
         }
         User user = userRepository.findById(userId).orElseThrow(ObjectNotFoundException::new);
-        List<Item> items = repository.findAllByUserIdOrderById(userId);
+        Pageable pageable = PageRequest.of(from / size, size);
+        List<Item> items = repository.findAllByUserIdOrderById(userId, pageable);
         List<ItemInfoDto> itemsByUser = new ArrayList<>();
         for (Item item : items) {
             List<Booking> bookings = bookingRepository.findByItemIdOrderByStartDesc(item.getId());
@@ -95,17 +103,23 @@ public class ItemServiceImpl implements ItemService {
         if ((itemDto.getAvailable() == null) || (itemDto.getName() == "") || (itemDto.getDescription() == null)) {
             throw new ValidationException("Необходимо указать статус, имя и описание");
         }
-        Item item = ItemMapper.toItem(itemDto, owner);
+        ItemRequest request = null;
+        if (itemDto.getRequestId() != 0) {
+            request = itemRequestRepository.findById(itemDto.getRequestId())
+                    .orElseThrow(() -> new ObjectNotFoundException("Нет запроса с таким id"));
+        }
+        Item item = ItemMapper.toItem(itemDto, owner, request);
         return ItemMapper.toItemDto(repository.save(item));
     }
 
     @Override
-    public List<ItemDto> searchItem (long userId, String text) {
+    public List<ItemDto> searchItem (long userId, String text, Integer from, Integer size) {
         List<ItemDto> resultSearch = new ArrayList<>();
         if (text.isEmpty()) {
             return resultSearch;
         }
-        List<Item> itemList = repository.search(text);
+        Pageable pageable = PageRequest.of(from / size, size);
+        List<Item> itemList = repository.search(text, pageable);
         for (Item item : itemList) {
             if (item.isAvailable() == true) {
                 resultSearch.add(ItemMapper.toItemDto(item));
