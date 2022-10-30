@@ -1,6 +1,5 @@
 package ru.practicum.user;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
@@ -11,7 +10,6 @@ import java.util.List;
 
 @RestController
 @Slf4j
-@RequiredArgsConstructor
 @RequestMapping("/users")
 public class UserController {
 
@@ -41,7 +39,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public UserDto update(@PathVariable long userId, @RequestBody @Validated(Update.class) UserDto userDto) {
+    public UserDto update(@PathVariable long userId, @RequestBody UserDto userDto) {
         log.info("Обновляем пользователя {}", userDto.getId());
         return userService.updateUser(userId, userDto);
     }

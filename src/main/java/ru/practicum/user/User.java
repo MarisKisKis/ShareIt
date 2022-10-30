@@ -1,15 +1,33 @@
 package ru.practicum.user;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import javax.persistence.*;
+import javax.validation.constraints.Email;
 
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "users")
 public class User {
-    private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
+    private long id;
+    @Email
+    @Column(name = "email", nullable = false, unique = true, length = 512)
     private String email;
+    @Column(name = "name", nullable = false)
     private String name;
+
+    public User(String email, String name) {
+        this.email = email;
+        this.name = name;
+
+    }
 }
