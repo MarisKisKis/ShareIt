@@ -1,13 +1,7 @@
 package ru.practicum.booking;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import ru.practicum.Create;
 
-import javax.persistence.Column;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
 @Getter

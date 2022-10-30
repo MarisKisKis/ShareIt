@@ -3,7 +3,6 @@ package ru.practicum.booking;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.item.Item;
 
 import java.time.LocalDateTime;
 

@@ -14,7 +14,6 @@ import ru.practicum.user.UserRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static java.util.stream.Collectors.toList;
