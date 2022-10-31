@@ -1,7 +1,6 @@
-package user;
+package ru.practicum.user;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,17 +13,13 @@ import static org.hamcrest.Matchers.is;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
-import ru.practicum.user.UserController;
-import ru.practicum.user.UserDto;
-import ru.practicum.user.UserService;
+
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
 
 import static org.mockito.Mockito.when;
-
-import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,12 +35,7 @@ class UserControllerTest {
     @Autowired
     ObjectMapper mapper;
 
-    private UserDto userDto1;
-
-    @BeforeEach
-    void beforeEach() {
-        userDto1 = new UserDto(1L, "user1", "user1@mail");
-    }
+    private final UserDto userDto1 = new UserDto(1L, "user1", "user1@user1.ru");
 
     @Test
     void getAllUsersTest() throws Exception {
@@ -53,9 +43,9 @@ class UserControllerTest {
                 .thenReturn(Collections.emptyList());
 
         mockMvc.perform(get("/users"))
-                .andExpect(status().isOk())
-                .andExpect((ResultMatcher) content().json("[]"));
-        verify(userService);
+                .andExpect(status().isOk());
+        verify(userService, times(1))
+                .getAllUsers();
     }
 
     @Test
@@ -69,7 +59,8 @@ class UserControllerTest {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id", is(userDto1.getId()), Long.class));
-        verify(userService);
+        verify(userService, times(1))
+                .findUserById(userDto1.getId());
     }
 
     @Test

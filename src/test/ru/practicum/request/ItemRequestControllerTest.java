@@ -1,4 +1,4 @@
-package request;
+package ru.practicum.request;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -10,8 +10,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.notNullValue;
-
-import ru.practicum.request.*;
 import ru.practicum.user.User;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -81,7 +79,6 @@ public class ItemRequestControllerTest {
                         .header("X-Sharer-User-Id", 1L)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[*]").isArray())
                 .andExpect(jsonPath("$", hasSize(1)))
                 .andExpect(jsonPath("$[0].id", is(requestAndResponseDto.getId()), Long.class))
                 .andExpect(jsonPath("$[0].description", is(requestAndResponseDto.getDescription())))
@@ -93,7 +90,7 @@ public class ItemRequestControllerTest {
     void getRequestTest() throws Exception {
         when(itemRequestService.createRequest(2L, itemRequestDto))
                 .thenReturn(itemRequestDto);
-        when(itemRequestService.getRequest(2L, itemRequestDto.getId()))
+        when(itemRequestService.getRequest(1L, itemRequestDto.getId()))
                 .thenReturn(requestAndResponseDto);
 
         mockMvc.perform(get("/users/2", itemRequestDto.getId())

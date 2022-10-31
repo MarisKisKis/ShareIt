@@ -1,11 +1,8 @@
-package booking;
+package ru.practicum.booking;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.booking.*;
 import ru.practicum.item.Item;
@@ -24,7 +21,6 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes=BookingService.class)
-@Transactional
 public class BookingServiceTest {
 
     @Mock
@@ -36,14 +32,14 @@ public class BookingServiceTest {
     @Mock
     private BookingService bookingService;
     private User user = new User(1L, "user1", "user1@mail.ru");
-    private final Item item = new Item(1L, "item", "some item", true, user, new ItemRequest(1L, "request", user, LocalDateTime.now()));
+    private final Item item = new Item(1L, "item", "some java.ru.practicum.item", true, user, new ItemRequest(1L, "request", user, LocalDateTime.now()));
 
     private Booking booking = new Booking(1L, LocalDateTime.now().plusHours(1), LocalDateTime.now().plusDays(1), item, user,
             BookingStatus.WAITING);
     private BookingDto bookingDto = BookingMapper.toBookingDto(booking);
-    private BookingDtoInput bookingDtoInput = new BookingDtoInput(item.getId(), LocalDateTime.now().plusHours(1), LocalDateTime.now().plusDays(1), 1);
+    private BookingDtoInput bookingDtoInput = new BookingDtoInput(item.getId(), LocalDateTime.now().plusHours(1), LocalDateTime.now().plusDays(1), 1L);
     @Test
-    void testCreateBooking() {
+    void testCreateBooking() throws Exception {
         when(itemRepository.findById(anyLong()))
                 .thenReturn(Optional.of(item));
         when(userRepository.findById(anyLong()))
@@ -52,8 +48,7 @@ public class BookingServiceTest {
                 .thenReturn(List.of(booking));
         when(bookingRepository.save(any(Booking.class)))
                 .thenReturn(booking);
-        BookingDto bookingDtoNew = bookingService.addNewBooking(user.getId(), bookingDtoInput);
-
+        BookingDto bookingDtoNew = bookingService.addNewBooking(1L, bookingDtoInput);
         assertNotNull(bookingDtoNew);
         assertEquals(bookingDto.getId(), bookingDtoNew.getId());
         assertEquals(bookingDto.getStart(), bookingDtoNew.getStart());

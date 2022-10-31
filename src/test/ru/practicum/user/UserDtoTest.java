@@ -1,4 +1,4 @@
-package user;
+package ru.practicum.user;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ class UserDtoTest {
 
     @Test
     void testSerialize() throws Exception {
-        UserDto dto = new UserDto(1L, "UserName", "user@email");
+        UserDto dto = new UserDto(1L, "UserName", "java.ru.practicum.user@email");
 
         JsonContent<UserDto> result = json.write(dto);
         assertThat(result).hasJsonPath("$.id");

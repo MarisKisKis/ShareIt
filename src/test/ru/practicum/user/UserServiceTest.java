@@ -1,10 +1,8 @@
-package user;
+package ru.practicum.user;
 
-import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +16,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @SpringBootTest(classes= UserService.class)
-@Transactional
 public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
@@ -30,13 +27,12 @@ public class UserServiceTest {
     void beforeEach() {
         userRepository = mock(UserRepository.class);
         userService = new UserServiceImpl(userRepository);
-        user = new User(1L, "user 1", "user1@email");
+        user = new User(1L, "java.ru.practicum.user 1", "user1@email");
     }
 
     @Test
     void testUpdateUser() {
-        UserDto userDto = new UserDto(1L, "user_21", "user21@mail");
-        User user = new User(userDto.getId(), userDto.getName(), userDto.getEmail());
+        UserDto userDto = UserMapper.toUserDto(user);
         when(userRepository.save(user))
                 .thenReturn(user);
         when(userRepository.findById(userDto.getId()))

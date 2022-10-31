@@ -1,4 +1,4 @@
-package item;
+package ru.practicum.item;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -16,7 +16,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.item.*;
 import ru.practicum.request.ItemRequest;
 import ru.practicum.user.User;
-import ru.practicum.user.UserController;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
@@ -44,10 +43,10 @@ public class ItemControllerTest {
     private User owner = new User(1L, "owner ", "owner@mail.ru");
     private User user = new User(2L, "user1", "user1@mail.ru");
     private ItemRequest request = new ItemRequest(1L, "request", user, LocalDateTime.now());
-    private Item item = new Item(1L, "item", "some item", true, owner, request);
+    private Item item = new Item(1L, "item", "some java.ru.practicum.item", true, owner, request);
     private Item item2 = new Item(2L, "item2", "some item2", true, owner, new ItemRequest(2L, "request2", user, LocalDateTime.now()));
     private List<CommentDto> comments = new ArrayList<>();
-    private final ItemInfoDto itemInfoDto = new ItemInfoDto(1L, "item", "some item", true, comments);
+    private final ItemInfoDto itemInfoDto = new ItemInfoDto(1L, "item", "some java.ru.practicum.item", true, comments);
     private ItemDto itemDto = ItemMapper.toItemDto(item);
     private Comment comment = new Comment(1L, "some comment", item, user, LocalDateTime.now().minusDays(1));
     private CommentDto commentDto = CommentMapper.toCommentDto(comment);

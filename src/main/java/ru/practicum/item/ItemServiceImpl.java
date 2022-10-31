@@ -161,7 +161,7 @@ public class ItemServiceImpl implements ItemService {
         Optional <User> userOpt = userRepository.findById(userId);
         User user = userOpt.get();
         if (user == null) {
-            throw new ValidationException("no user");
+            throw new ValidationException("no java.ru.practicum.user");
         }
         Item item = repository.findById(itemId).orElseThrow(ObjectNotFoundException::new);
         List<Booking> bookings = bookingRepository.findByBookerIdAndItemId(userId, itemId);
