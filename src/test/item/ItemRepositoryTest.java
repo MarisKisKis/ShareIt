@@ -3,10 +3,11 @@ package item;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.junit.runner.RunWith;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.junit4.SpringRunner;
 import ru.practicum.item.Item;
 import ru.practicum.item.ItemRepository;
 import ru.practicum.request.ItemRequest;
@@ -16,6 +17,7 @@ import ru.practicum.user.UserRepository;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
+@RunWith(SpringRunner.class)
 @DataJpaTest
 class ItemRepositoryTest {
 
@@ -46,7 +48,6 @@ class ItemRepositoryTest {
         final Page<Item> byOwner = (Page<Item>) itemRepository.findAllByUserIdOrderById(user1.getId(), Pageable.unpaged());
         assertNotNull(byOwner);
         assertEquals(1, byOwner.getTotalElements());
-        // ...
     }
 
     @AfterEach

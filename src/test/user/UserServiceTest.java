@@ -3,9 +3,11 @@ package user;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.user.*;
 
 import java.util.Optional;
@@ -15,13 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RequiredArgsConstructor(onConstructor_ = @Autowired)
-@SpringBootTest
+@SpringBootTest(classes= UserService.class)
+@Transactional
 public class UserServiceTest {
-
-    UserServiceImpl userService;
-    UserRepository userRepository;
+    @Mock
+    private UserRepository userRepository;
+    private UserServiceImpl userService;
     private User user;
+
 
     @BeforeEach
     void beforeEach() {
