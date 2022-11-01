@@ -1,18 +1,18 @@
 package ru.practicum.item;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import ru.practicum.request.ItemRequest;
 import ru.practicum.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "items", schema = "public")
 public class Item {
@@ -34,18 +34,7 @@ public class Item {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    public Item (String name, String description, Boolean available, User user) {
-        this.name = name;
-        this.description = description;
-        this.available = available;
-        this.user = user;
-
-    }
-
-    /*
-    @Column(name = "request_Id")
-    private String requestId;
-
-     */
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "request_id")
+    private ItemRequest request;
 }

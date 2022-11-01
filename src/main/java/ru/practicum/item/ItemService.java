@@ -8,9 +8,9 @@ public interface ItemService {
 
     ItemInfoDto getItem (long userId, long itemId);
 
-    List <ItemInfoDto> getAllItemsByUser(long userId);
+    List <ItemInfoDto> getAllItemsByUser(long userId, Integer from, Integer size);
 
-    List<ItemDto> searchItem (long userId, String text);
+    List<ItemDto> searchItem (long userId, String text, Integer from, Integer size);
 
     ItemDto updateItem (ItemDto item, long itemId, long userId);
 

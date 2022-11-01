@@ -26,7 +26,6 @@ public class ItemInfoDto {
         this.comments = comments;
     }
 
-
     @Data
     @NoArgsConstructor
     @AllArgsConstructor

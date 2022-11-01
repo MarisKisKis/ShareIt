@@ -1,6 +1,8 @@
 package ru.practicum.booking;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -126,7 +128,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public List<BookingDto> getUserBookings(long userId, BookingState state) {
+    public List<BookingDto> getUserBookings(long userId, BookingState state, Integer from, Integer size) {
+        validate(userId, from, size);
         Optional<User> user = userRepository.findById(userId);
         if ((user == null)|| (user.isEmpty())) {
             throw new ObjectNotFoundException("Нет пользователя c таким id");
@@ -135,30 +138,30 @@ public class BookingServiceImpl implements BookingService {
             throw new ObjectNotFoundException("Отсутствует id пользователя");
         }
         Sort startSortDesc = Sort.by(Sort.Direction.DESC, "start");
+        Pageable pageable = PageRequest.of(from / size, size, startSortDesc);
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
             case ALL:
-                 bookings = bookingRepository.findAllByBookerId(userId, startSortDesc);
+                 bookings = bookingRepository.findAllByBookerId(userId, pageable);
                  break;
             case FUTURE:
-                 bookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, LocalDateTime.now(),
-                                startSortDesc);
+                 bookings = bookingRepository.findByBookerIdAndStartIsAfter(userId, LocalDateTime.now(), pageable);
                 break;
             case CURRENT:
                 bookings = bookingRepository.findByBookerIdAndEndIsAfterAndStartIsBefore(userId,
-                                LocalDateTime.now(), LocalDateTime.now(), startSortDesc);
+                                LocalDateTime.now(), LocalDateTime.now(), pageable);
                 break;
             case PAST:
                 bookings = bookingRepository.findByBookerIdAndEndIsBefore(userId, LocalDateTime.now(),
-                                startSortDesc);
+                        pageable);
                 break;
             case WAITING:
-                return bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.WAITING, startSortDesc)
+                return bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.WAITING, pageable)
                         .stream()
                         .map(BookingMapper::toBookingDto)
                         .collect(toList());
             case REJECTED:
-                bookings = bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.REJECTED, startSortDesc);
+                bookings = bookingRepository.findByBookerIdAndStatus(userId, BookingStatus.REJECTED, pageable);
             break;
         }
         return bookings
@@ -169,37 +172,48 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-    public List<BookingDto> getAllItemsBookings(long ownerId, BookingState state) {
-        Optional<User> user = userRepository.findById(ownerId);
-        if (user.isEmpty()) {
-            throw new ObjectNotFoundException("Нет пользователя с таким id");
-        }
+    public List<BookingDto> getAllItemsBookings(long ownerId, BookingState state, Integer from, Integer size) {
+        validate(ownerId, from, size);
         Sort startSortDesc = Sort.by(Sort.Direction.DESC, "start");
+        Pageable pageable = PageRequest.of(from / size, size, startSortDesc);
         List<Booking> bookings = new ArrayList<>();
         switch (state) {
             case ALL:
-                bookings = bookingRepository.findByItemId_UserId(ownerId, startSortDesc);
+                bookings = bookingRepository.findByItemId_UserId(ownerId, pageable);
                 break;
             case FUTURE:
-                bookings = bookingRepository.findByItemId_UserIdAndStartIsAfter(ownerId, LocalDateTime.now(), startSortDesc);
+                bookings = bookingRepository.findByItemId_UserIdAndStartIsAfter(ownerId, LocalDateTime.now(), pageable);
 ;               break;
             case CURRENT:
                 bookings = bookingRepository.findByItemId_UserIdAndEndIsAfterAndStartIsBefore(ownerId, LocalDateTime.now(),
-                                LocalDateTime.now(), startSortDesc);
+                                LocalDateTime.now(), pageable);
                 break;
             case PAST:
-                bookings = bookingRepository.findByItemId_UserIdAndEndIsBefore(ownerId, LocalDateTime.now(), startSortDesc);
+                bookings = bookingRepository.findByItemId_UserIdAndEndIsBefore(ownerId, LocalDateTime.now(), pageable);
                 break;
             case WAITING:
-                bookings = bookingRepository.findByItemId_User_IdAndStatus(ownerId, BookingStatus.WAITING, startSortDesc);
+                bookings = bookingRepository.findByItemId_User_IdAndStatus(ownerId, BookingStatus.WAITING, pageable);
                 break;
             case REJECTED:
-                bookings = bookingRepository.findByItemId_User_IdAndStatus(ownerId, BookingStatus.REJECTED, startSortDesc);
+                bookings = bookingRepository.findByItemId_User_IdAndStatus(ownerId, BookingStatus.REJECTED, pageable);
                 break;
         }
         return bookings
                 .stream()
                 .map(BookingMapper::toBookingDto)
                 .collect(Collectors.toList());
+    }
+
+    private void validate(Long ownerId, Integer from, Integer size) {
+        Optional<User> user = userRepository.findById(ownerId);
+        if (user.isEmpty()) {
+            throw new ObjectNotFoundException("Нет такого пользователя");
+        }
+        if (from < 0) {
+            throw new ValidationException("from меньше 0");
+        }
+        if (size <= 0) {
+            throw new ValidationException("size меньше либо равно 0");
+        }
     }
 }
