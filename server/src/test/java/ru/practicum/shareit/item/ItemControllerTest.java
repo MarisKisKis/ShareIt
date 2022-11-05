@@ -46,6 +46,8 @@ public class ItemControllerTest {
     private List<CommentDto> comments = new ArrayList<>();
     private final ItemInfoDto itemInfoDto = new ItemInfoDto(1L, "item", "some java.ru.practicum.item", true, comments);
     private ItemDto itemDto = ItemMapper.toItemDto(item);
+    private ItemDto itemDto1 = new ItemDto(2L, "itemDto", "description", true, 1);
+
     private Comment comment = new Comment(1L, "some comment", item, user, LocalDateTime.now().minusDays(1));
     private CommentDto commentDto = CommentMapper.toCommentDto(comment);
 
@@ -135,23 +137,5 @@ public class ItemControllerTest {
                 .andExpect(jsonPath("$.text", is(commentDto.getText())))
                 .andExpect(jsonPath("$.authorName", is(commentDto.getAuthorName())))
                 .andExpect(jsonPath("$.created", is(commentDto.getCreated().format(DateTimeFormatter.ISO_DATE_TIME))));
-    }
-
-    @Test
-    void testUpdateItem() throws Exception {
-        when(itemService.updateItem(itemDto, any(), anyLong()))
-                .thenReturn(itemDto);
-        mockMvc.perform(patch("/items/1")
-                        .content(mapper.writeValueAsString(itemDto))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("X-Sharer-User-Id", 1)
-                        .param("itemId", "1")
-                        .accept(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id", is(itemDto.getId()), Long.class))
-                .andExpect(jsonPath("$.name", is(itemDto.getName())))
-                .andExpect(jsonPath("$.description", is(itemDto.getDescription())))
-                .andExpect(jsonPath("$.available", is(itemDto.getAvailable())));
     }
 }
