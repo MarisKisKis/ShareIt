@@ -17,5 +17,6 @@ public class CommentDto {
     @NotBlank
     private String text;
     private String authorName;
+    @NotBlank
     private LocalDateTime created;
 }
